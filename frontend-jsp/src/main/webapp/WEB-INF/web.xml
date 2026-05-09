@@ -48,15 +48,6 @@
 
     <!-- Servlets -->
     <servlet>
-        <servlet-name>HomeServlet</servlet-name>
-        <servlet-class>mg.mitandrina.web.servlet.HomeServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>HomeServlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>AuthServlet</servlet-name>
         <servlet-class>mg.mitandrina.web.servlet.AuthServlet</servlet-class>
     </servlet>
