@@ -3,8 +3,6 @@
 # Orchestration complète: PostgreSQL + PostGIS, Redis, FastAPI AI, Node Gateway
 # =============================================================================
 
-version: '3.8'
-
 services:
   # ==========================================================================
   # PostgreSQL + PostGIS

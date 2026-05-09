@@ -280,7 +280,7 @@ docker-compose up -d --scale ai-service=3
 
 | Couche | Technologie |
 |--------|-------------|
-| **Frontend** | Next.js 14, React, TailwindCSS, Mapbox/Leaflet |
+| **Frontend** | JSP, **Tailwind CSS**, **Bootstrap 5**, Leaflet Maps |
 | **API Gateway** | Node.js, Express, Socket.io, Bull |
 | **AI Services** | Python, FastAPI, SQLAlchemy 2.0 |
 | **ML Models** | XGBoost, TensorFlow (CNN), Transformers (BERT) |
@@ -288,6 +288,30 @@ docker-compose up -d --scale ai-service=3
 | **Database** | PostgreSQL 15 + PostGIS |
 | **Cache/Queue** | Redis |
 | **DevOps** | Docker, Docker Compose |
+
+### 🎨 Frontend Stack (JSP + Tailwind + Bootstrap)
+
+Le frontend utilise une approche hybride moderne :
+
+- **Tailwind CSS** : Utility-first CSS avec configuration personnalisée
+  - Colors : Danger palette (rouge urgence), Dark theme
+  - Animations : Float, pulse-glow, fade-in-up
+  - Components : glass, glass-card, btn-emergency
+  
+- **Bootstrap 5** : Components et forms
+  - Dark theme override pour forms, modals, dropdowns
+  - Bootstrap Icons pour la iconographie
+  - Grid system pour le responsive
+  
+- **JSP** : JavaServer Pages avec JSTL
+  - Layout templates (`base-tailwind.jsp`)
+  - JSTL Core pour la logique conditionnelle
+  - Expression Language pour les données dynamiques
+  
+- **Leaflet** : Cartographie interactive
+  - Custom markers avec emojis
+  - Dark map tiles
+  - Real-time geolocation
 
 ## 📄 Licence
 
