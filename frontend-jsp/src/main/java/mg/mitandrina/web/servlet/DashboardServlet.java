@@ -13,6 +13,8 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 
+import org.apache.hc.core5.http.ParseException;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +84,7 @@ public class DashboardServlet extends HttpServlet {
         }
     }
 
-    private List<Map<String, Object>> fetchAlerts(String token) throws IOException {
+    private List<Map<String, Object>> fetchAlerts(String token) throws IOException, ParseException {
         HttpGet httpGet = new HttpGet(API_BASE_URL + "/alerts?active=true&limit=10");
         httpGet.setHeader("Authorization", "Bearer " + token);
         
@@ -103,7 +105,7 @@ public class DashboardServlet extends HttpServlet {
         return 2; // Mock
     }
 
-    private List<Map<String, Object>> fetchNearbyIncidents(String token, Map<String, Object> user) throws IOException {
+    private List<Map<String, Object>> fetchNearbyIncidents(String token, Map<String, Object> user) throws IOException, ParseException {
         Double lat = (Double) user.getOrDefault("locationLat", -18.9078);
         Double lng = (Double) user.getOrDefault("locationLng", 47.5208);
         
