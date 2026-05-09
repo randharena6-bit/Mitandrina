@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌪️ MITANDRINA - Diagrammes UML</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 3px solid #e94560;
+            margin-bottom: 40px;
+        }
+        h1 { font-size: 2.5em; color: #e94560; margin-bottom: 10px; }
+        h2 {
+            color: #0f3460;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin: 40px 0 20px;
+            border-left: 5px solid #e94560;
+        }
+        .diagram-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .mermaid {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .export-btn {
+            background: #e94560;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 5px;
+        }
+        .export-btn:hover { background: #c73e54; }
+        .info-box {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 4px solid #e94560;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .legend-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .color-dot {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        .normal { background: #2E7D32; }
+        .vigilance { background: #F9A825; }
+        .alerte { background: #E65100; }
+        .urgence { background: #C00000; }
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 50px;
+            color: rgba(255,255,255,0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌪️ MITANDRINA</h1>
+            <p>Plateforme IA de Prédiction, Détection et Coordination des Catastrophes Naturelles</p>
+            <p style="color: rgba(255,255,255,0.7); margin-top: 10px;">Diagrammes UML Complets - Version 1.0</p>
+        </header>
+
+        <div class="info-box">
+            <strong>📊 Légende des Niveaux d'Alerte :</strong>
+            <div class="legend">
+                <div class="legend-item"><span class="color-dot normal"></span><strong>NORMAL (0-30)</strong><br>Surveillance passive</div>
+                <div class="legend-item"><span class="color-dot vigilance"></span><strong>VIGILANCE (31-55)</strong><br>Pré-alerte équipes</div>
+                <div class="legend-item"><span class="color-dot alerte"></span><strong>ALERTE (56-75)</strong><br>Alerte publique, évacuation</div>
+                <div class="legend-item"><span class="color-dot urgence"></span><strong>URGENCE (76-100)</strong><br>Évacuation immédiate, SMS masse</div>
+            </div>
+        </div>
+
+        <!-- 1. DIAGRAMME DE CONTEXTE -->
+        <div class="diagram-section">
+            <h2>📍 1. Diagramme de Contexte (C4)</h2>
+            <p>Vue haut niveau du système MITANDRINA et ses interactions avec les acteurs et systèmes externes.</p>
+            <div class="mermaid">
+flowchart TB
+    subgraph Utilisateurs["👥 UTILISATEURS"]
+        POP["🧑‍🤝‍🧑 Population Civile<br/>Zones à risque"]
+        SEC["🚑 Forces de Secours<br/>Pompiers, Police, Samu"]
+        ADM["👨‍💼 Administrateur<br/>Gestionnaire plateforme"]
+    end
+
+    subgraph MITANDRINA["🌪️ MITANDRINA PLATFORM"]
+        PLAT["Plateforme IA unifiée<br/>Prédiction + Détection + Coordination"]
+    end
+
+    subgraph Données_Externes["📡 SOURCES DE DONNÉES"]
+        OW["🌤️ OpenWeather API<br/>Météo temps réel"]
+        NASA["🛰️ NASA FIRMS<br/>Détection incendies"]
+        SOC["📱 Réseaux Sociaux<br/>Tweets, Posts"]
+        OSM["🗺️ OpenStreetMap<br/>Cartographie & Routes"]
+    end
+
+    subgraph Alertes["📢 CANAUX D'ALERTE"]
+        SMS["📲 SMS (Twilio)"]
+        PUSH["🔔 Push Mobile (FCM)"]
+        WEB["💻 WebSocket"]
+        EMAIL["📧 Email"]
+    end
+
+    POP -->|Reçoit alertes<br/>Consulte carte| PLAT
+    SEC -->|Coordonne<br/>Interventions| PLAT
+    ADM -->|Configure<br/>Supervise| PLAT
+
+    OW -->|API REST| PLAT
+    NASA -->|API REST| PLAT
+    SOC -->|Stream API| PLAT
+    OSM -->|OSMnx Lib| PLAT
+
+    PLAT --> SMS
+    PLAT --> PUSH
+    PLAT --> WEB
+    PLAT --> EMAIL
+            </div>
+        </div>
+
+        <!-- 2. DIAGRAMME USE CASE -->
+        <div class="diagram-section">
+            <h2>🎯 2. Diagramme de Cas d'Utilisation</h2>
+            <p>Fonctionnalités principales réparties par profil utilisateur.</p>
+            <div class="mermaid">
+flowchart LR
+    subgraph Acteurs["ACTEURS"]
+        POP["👤 Population"]
+        SEC["🚑 Secouristes"]
+        ADM["⚙️ Admin"]
+    end
+
+    subgraph UseCases["CAS D'UTILISATION"]
+        UC1["📍 Visualiser carte risques"]
+        UC2["🔔 Recevoir alertes"]
+        UC3["🗺️ Itinéraire évacuation"]
+        UC4["📢 Signaler incident"]
+
+        UC5["📊 Superviser incidents"]
+        UC6["🚁 Coordonner secours"]
+        UC7["📄 Générer rapport"]
+        UC8["✅ Valider alertes"]
+
+        UC9["⚡ Configurer seuils"]
+        UC10["👥 Gérer utilisateurs"]
+        UC11["🔮 Simuler 'What If?'"]
+        UC12["📈 Consulter KPI"]
+
+        UC13["🤖 IA Prédiction"]
+        UC14["🔥 IA Détection feu"]
+        UC15["💬 IA NLP Social"]
+        UC16["🧭 A* Routing"]
+    end
+
+    POP --> UC1 & UC2 & UC3 & UC4
+    SEC --> UC5 & UC6 & UC7 & UC8
+    ADM --> UC9 & UC10 & UC11 & UC12
+
+    UC13 -.->|génère| UC2
+    UC14 -.->|déclenche| UC2
+    UC15 -.->|alimente| UC2
+    UC16 -.->|calcule| UC3
+            </div>
+        </div>
+
+        <!-- 3. DIAGRAMME DE CLASSES -->
+        <div class="diagram-section">
+            <h2>📦 3. Diagramme de Classes</h2>
+            <p>Structure des entités métier et leurs relations.</p>
+            <div class="mermaid">
+classDiagram
+    class User {
+        +UUID id
+        +String email
+        +String phone
+        +UserRole role
+        +GeoLocation location
+        +DateTime created_at
+        +login()
+        +updateProfile()
+    }
+
+    class DisasterZone {
+        +UUID id
+        +String name
+        +GeoJSON polygon
+        +Float danger_score
+        +DisasterType type
+        +AlertLevel level
+        +DateTime detected_at
+        +calculateRisk()
+        +updateDangerScore()
+    }
+
+    class Alert {
+        +UUID id
+        +AlertLevel level
+        +DisasterType type
+        +String message
+        +GeoJSON zone
+        +DateTime emitted_at
+        +List~Channel~ channels
+        +Boolean confirmed
+        +send()
+        +confirm()
+    }
+
+    class Incident {
+        +UUID id
+        +String title
+        +String description
+        +GeoLocation location
+        +IncidentStatus status
+        +DisasterType type
+        +DateTime reported_at
+        +report()
+        +updateStatus()
+    }
+
+    class EvacuationRoute {
+        +UUID id
+        +UUID from_zone_id
+        +UUID to_shelter_id
+        +LineString path
+        +Float distance_km
+        +Float estimated_time
+        +Boolean is_active
+        +calculateRoute()
+    }
+
+    class Shelter {
+        +UUID id
+        +String name
+        +GeoLocation location
+        +Integer capacity
+        +Integer current_occupancy
+        +ShelterType type
+        +Boolean is_available
+        +checkAvailability()
+    }
+
+    class AIPrediction {
+        +UUID id
+        +DisasterType type
+        +Float confidence_score
+        +GeoJSON predicted_zone
+        +DateTime prediction_horizon
+        +ModelType model_used
+        +runPrediction()
+        +validateAccuracy()
+    }
+
+    class SocialSignal {
+        +UUID id
+        +String source_platform
+        +String raw_text
+        +GeoLocation inferred_location
+        +DisasterType detected_type
+        +Float nlp_confidence
+        +processNLP()
+    }
+
+    class RescueTeam {
+        +UUID id
+        +String name
+        +TeamType type
+        +GeoLocation current_position
+        +Integer team_size
+        +deploy()
+        +updatePosition()
+    }
+
+    class WeatherData {
+        +UUID id
+        +GeoLocation location
+        +Float temperature
+        +Float precipitation_24h
+        +Float river_level
+        +Float wind_speed
+        +fetchFromAPI()
+    }
+
+    User "1" -- "0..*" Alert : reçoit
+    User "1" -- "0..*" Incident : signale
+    DisasterZone "1" -- "0..*" Alert : génère
+    DisasterZone "1" -- "0..*" EvacuationRoute : origine
+    Shelter "1" -- "0..*" EvacuationRoute : destination
+    Incident "1" -- "0..1" DisasterZone : localisé dans
+    Alert "1" -- "0..*" SocialSignal : basé sur
+    AIPrediction "1" -- "1" DisasterZone : prédit
+    RescueTeam "0..*" -- "0..*" Incident : intervient sur
+    WeatherData "0..*" -- "1" DisasterZone : alimente
+            </div>
+        </div>
+
+        <!-- 4. SEQUENCE - DETECTION -->
+        <div class="diagram-section">
+            <h2>🔄 4.1 Séquence - Détection et Alerte</h2>
+            <p>Flux temps réel de détection d'une catastrophe et émission d'alertes.</p>
+            <div class="mermaid">
+sequenceDiagram
+    participant W as 🌤️ OpenWeather
+    participant N as 🛰️ NASA FIRMS
+    participant S as 📱 Social Media
+    participant B as ⚡ Backend
+    participant I as 🤖 IA Engine
+    participant DB as 🗄️ PostgreSQL
+    participant R as ⚡ Redis
+    participant A as 📢 Alert System
+    participant U as 👤 Utilisateur
+
+    par Collecte Données
+        W->>B: API météo
+        N->>B: API satellites
+        S->>B: Stream social
+    end
+
+    B->>I: Analyse agrégée
+
+    par Modèles IA
+        I->>I: Flood XGBoost
+        I->>I: Fire CNN
+        I->>I: Cyclone Model
+        I->>I: NLP BERT
+    end
+
+    I-->>B: Risk Score [0-100]
+
+    alt Score > 75 URGENCE
+        B->>DB: Enregistrer zone
+        B->>A: Trigger CRITIQUE
+        A->>U: SMS + Push
+        A->>U: WebSocket
+    else Score 56-75 ALERTE
+        B->>DB: Zone VIGILANCE
+        B->>A: Alerte standard
+        A->>U: Notification
+    else Score < 56
+        B->>DB: Log surveillance
+    end
+            </div>
+        </div>
+
+        <!-- 4.2 SEQUENCE - EVACUATION -->
+        <div class="diagram-section">
+            <h2>🗺️ 4.2 Séquence - Calcul Route Évacuation (A*)</h2>
+            <p>Processus de calcul d'itinéraire optimal avec pondération des dangers.</p>
+            <div class="mermaid">
+sequenceDiagram
+    actor U as 👤 Utilisateur
+    participant F as 🌐 Frontend
+    participant G as 🛡️ API Gateway
+    participant R as 🗺️ Routing Service
+    participant OSM as 🗺️ OSMnx
+    participant A as ⭐ Algo A*
+    participant DB as 🗄️ PostgreSQL
+    participant RD as ⚡ Redis
+
+    U->>F: Demande itinéraire
+    F->>G: POST /evacuation/route
+    G->>R: Forward request
+
+    R->>DB: Zones danger actives
+    DB-->>R: Polygones rouges
+
+    R->>RD: Cache graphe?
+    alt Cache hit
+        RD-->>R: Graphe existant
+    else Cache miss
+        R->>OSM: Télécharger OSM
+        OSM-->>R: NetworkX Graph
+        R->>RD: Stocker graphe
+    end
+
+    R->>A: Exécuter A*
+
+    loop Pour chaque nœud
+        A->>A: g(n) + h(n)
+        A->>R: Check danger zone
+        R-->>A: Danger factor
+        A->>A: Weight = dist × (1+danger×10)
+    end
+
+    A-->>R: Chemin optimal
+    R->>DB: Enregistrer route
+    R-->>G: Route + métriques
+    G-->>F: GeoJSON
+    F-->>U: Affichage carte
+            </div>
+        </div>
+
+        <!-- 5. DIAGRAMME COMPOSANTS -->
+        <div class="diagram-section">
+            <h2>🏗️ 5. Diagramme de Composants</h2>
+            <p>Architecture logicielle en couches et dépendances entre composants.</p>
+            <div class="mermaid">
+flowchart TB
+    subgraph Client["🖥️ CLIENT LAYER"]
+        C1["🌐 Dashboard React<br/>Next.js + Tailwind"]
+        C2["📱 PWA Mobile<br/>Responsive"]
+    end
+
+    subgraph Gateway["🛡️ API GATEWAY"]
+        G1["Express.js Gateway"]
+        G2["🔐 JWT Auth"]
+        G3["⚡ WebSocket Server"]
+    end
+
+    subgraph AI["🧠 AI ENGINE"]
+        AI1["🌊 Flood XGBoost"]
+        AI2["🔥 Fire CNN"]
+        AI3["🌀 Cyclone Model"]
+        AI4["💬 NLP BERT"]
+    end
+
+    subgraph Core["⚙️ CORE SERVICES"]
+        S1["🧠 Decision Engine"]
+        S2["🗺️ Routing A*"]
+        S3["📢 Alert Service"]
+        S4["🔮 Simulation"]
+    end
+
+    subgraph Data["🗄️ DATA LAYER"]
+        D1["🗄️ PostgreSQL<br/>+ PostGIS"]
+        D2["⚡ Redis Cache"]
+        D3["📋 Bull Queue"]
+    end
+
+    subgraph External["🔗 EXTERNAL"]
+        E1["🌤️ OpenWeather"]
+        E2["🛰️ NASA"]
+        E3["📲 Twilio"]
+        E4["🔔 Firebase"]
+        E5["🗺️ OSM"]
+    end
+
+    C1 --> G1
+    C2 --> G1
+    G1 --> G2
+    G1 --> G3
+
+    G1 --> AI1 & AI2 & AI3 & AI4
+    AI1 & AI2 & AI3 & AI4 --> S1
+    S1 --> S2 & S3
+
+    G1 --> S4
+    S2 --> E5
+    S3 --> D3
+
+    G1 --> D1 & D2
+    S1 & S2 --> D1
+    G1 --> E1 & E2
+    D3 --> E3 & E4
+            </div>
+        </div>
+
+        <!-- 6. DIAGRAMME DEPLOIEMENT -->
+        <div class="diagram-section">
+            <h2>☁️ 6. Diagramme de Déploiement</h2>
+            <p>Infrastructure cloud avec Vercel (frontend) et Railway (backend).</p>
+            <div class="mermaid">
+flowchart TB
+    subgraph Users["🌐 INTERNET"]
+        U1["👥 Utilisateurs"]
+    end
+
+    subgraph Vercel["▲ VERCEL EDGE"]
+        V1["Next.js 14<br/>Frontend + API"]
+    end
+
+    subgraph Railway["🚂 RAILWAY CLOUD"]
+        subgraph Backend["Backend Containers"]
+            B1["API Gateway<br/>Node.js"]
+            B2["AI Services<br/>Python FastAPI"]
+            B3["WebSocket<br/>Socket.io"]
+        end
+
+        subgraph Data["Data Layer"]
+            DB1["🗄️ PostgreSQL<br/>PostGIS"]
+            DB2["⚡ Redis"]
+        end
+
+        subgraph Workers["Workers"]
+            W1["Bull Queue"]
+            W2["ML Inference"]
+        end
+    end
+
+    subgraph APIs["🔗 EXTERNAL APIs"]
+        A1["OpenWeather"]
+        A2["NASA FIRMS"]
+        A3["Twilio"]
+        A4["Firebase"]
+        A5["OpenStreetMap"]
+    end
+
+    U1 --> Vercel
+    V1 --> B1
+    B1 --> B2 & B3
+    B1 --> DB1 & DB2
+    B2 --> DB1
+    DB2 --> W1
+    B2 --> W2
+    B1 --> A1 & A2
+    W1 --> A3 & A4
+    B2 --> A5
+            </div>
+        </div>
+
+        <!-- 7. ACTIVITE A* -->
+        <div class="diagram-section">
+            <h2>⭐ 7. Diagramme d'Activité - Algorithme A*</h2>
+            <p>Logique algorithmique du calcul de route d'évacuation.</p>
+            <div class="mermaid">
+flowchart TD
+    Start(["🚀 Début A*"]) --> Init["📋 Initialisation<br/>open_set={start}<br/>g_score[start]=0<br/>f_score[start]=h(start)"]
+
+    Init --> Check{"❓ open_set<br/>vide ?"}
+    Check -->|Non| Pop["📤 Extraire min f_score"]
+    Pop --> Goal{"🎯 Objectif<br/>atteint ?"}
+
+    Goal -->|Oui| Reconstruct["🔄 Reconstruire chemin"]
+    Reconstruct --> End(["✅ Chemin optimal"])
+
+    Goal -->|Non| Neighbors["🔍 Pour chaque voisin"]
+    Neighbors --> Danger["⚠️ Récupérer<br/>danger_factor"]
+    Danger --> Calc["🧮 tentative_g =<br/>g[current] + dist×(1+danger×10)"]
+    Calc --> Better{"💡 tentative_g <<br/>meilleur ?"}
+
+    Better -->|Oui| Update["✏️ Mise à jour<br/>came_from, scores<br/>Ajouter à open_set"]
+    Update --> Next
+    Better -->|Non| Next["➡️ Voisin suivant"]
+    Next -->|Continuer| Neighbors
+    Next -->|Tous traités| Check
+
+    Check -->|Oui| NoPath(["❌ Aucun chemin"])
+
+    style Start fill:#2E7D32,color:#fff
+    style End fill:#2E7D32,color:#fff
+    style NoPath fill:#C00000,color:#fff
+            </div>
+        </div>
+
+        <!-- 8. ETAT - CYCLE ALERTE -->
+        <div class="diagram-section">
+            <h2>🚨 8. Diagramme d'État - Cycle d'Alerte</h2>
+            <p>Cycle de vie complet d'une alerte catastrophe.</p>
+            <div class="mermaid">
+stateDiagram-v2
+    [*] --> Surveillance: Données détectées
+
+    Surveillance --> Analyse: Score IA calculé
+
+    state Analyse {
+        [*] --> Normal: Score 0-30
+        [*] --> Vigilance: Score 31-55
+        [*] --> Alerte: Score 56-75
+        [*] --> Urgence: Score 76-100
+    }
+
+    Normal --> Surveillance: Surveillance passive
+    Vigilance --> Pre_Alerte: Pré-alerte
+    Alerte --> Evacuation: Routes calculées
+    Urgence --> Evacuation: SMS masse
+
+    Pre_Alerte --> Alerte: Danger ↑
+    Pre_Alerte --> Surveillance: Danger ↓
+    Alerte --> Urgence: Danger ↑
+    Alerte --> Surveillance: Danger ↓
+
+    Evacuation --> Intervention: Secours déployés
+    Urgence --> Intervention: Équipes envoyées
+    Intervention --> Resolution: Situation maîtrisée
+    Resolution --> Rapport: Génération PDF
+    Rapport --> Archivage: Historisation
+    Archivage --> [*]
+            </div>
+        </div>
+
+        <div class="info-box" style="margin-top: 40px;">
+            <strong>💡 Comment utiliser ces diagrammes :</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li>Ouvrez ce fichier HTML dans n'importe quel navigateur</li>
+                <li>Les diagrammes sont interactifs et zoomables</li>
+                <li>Clic droit → "Enregistrer l'image" pour exporter en PNG</li>
+                <li>Compatible avec tous les outils de documentation (Confluence, Notion, etc.)</li>
+            </ul>
+        </div>
+
+        <footer>
+            <p>🌪️ MITANDRINA - Hackathon International Mai 2026</p>
+            <p>Impact cible : Réduction pertes humaines mondiales</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                boxMargin: 10
+            }
+        });
+    </script>
+</body>
+</html>
