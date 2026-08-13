@@ -41,21 +41,21 @@ router.get('/', async (req, res, next) => {
     const params = [];
     
     if (active === 'true') {
-      whereClause += ' AND resolved_at IS NULL';
+      whereClause += ' AND a.resolved_at IS NULL';
     }
     if (level) {
-      whereClause += ` AND level = $${params.length + 1}`;
+      whereClause += ` AND a.level = $${params.length + 1}`;
       params.push(level);
     }
     if (type) {
-      whereClause += ` AND type = $${params.length + 1}`;
+      whereClause += ` AND a.type = $${params.length + 1}`;
       params.push(type);
     }
     
     // Filtre géographique
     if (lat && lng) {
       whereClause += ` AND ST_DWithin(
-        zone_geometry,
+        a.zone_geometry,
         ST_SetSRID(ST_MakePoint($${params.length + 2}, $${params.length + 1}), 4326)::geography,
         $${params.length + 3}
       )`;
@@ -63,7 +63,7 @@ router.get('/', async (req, res, next) => {
     }
     
     const countResult = await pgPool.query(
-      `SELECT COUNT(*) FROM alerts ${whereClause}`,
+      `SELECT COUNT(*) FROM alerts a ${whereClause}`,
       params
     );
     

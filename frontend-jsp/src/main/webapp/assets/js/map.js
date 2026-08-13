@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
         attribution: '© OpenStreetMap'
     });
     
-    const satelliteLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        maxZoom: 17,
-        attribution: '© OpenTopoMap'
+    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        attribution: '© Esri, Maxar, Earthstar Geographics'
     });
     
     // Default layer

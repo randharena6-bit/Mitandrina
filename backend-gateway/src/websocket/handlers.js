@@ -143,8 +143,8 @@ async function broadcastAlert(io, alert) {
       });
     }
     
-    // Aussi notifier les admins
-    io.to('role:administrateur').emit('alert:admin', alert);
+    // Aussi notifier les admins et secouristes
+    io.to('role:administrateur').to('role:secouriste').emit('alert:admin', alert);
     
   } catch (err) {
     logger.error('Broadcast alert error:', err);

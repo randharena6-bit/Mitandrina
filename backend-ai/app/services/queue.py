@@ -1,6 +1,7 @@
 """Service de queue Redis pour tâches async."""
 
 import json
+from datetime import datetime
 import redis.asyncio as redis
 from app.core.config import settings
 
@@ -39,6 +40,3 @@ async def enqueue_social_signal(text: str, platform: str, analysis: dict):
 async def publish_websocket_event(channel: str, data: dict):
     """Publie un événement temps réel."""
     await redis_client.publish(f"mitandrina:ws:{channel}", json.dumps(data))
-
-
-from datetime import datetime

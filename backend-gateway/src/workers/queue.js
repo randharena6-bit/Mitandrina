@@ -123,8 +123,8 @@ notificationQueue.process(async (job) => {
     
     // Créer notification
     await pgPool.query(
-      `INSERT INTO notifications (user_id, alert_id, title, message, channel, status, sent_at)
-       VALUES ($1, $2, $3, $4, $5, 'sent', NOW())`,
+      `INSERT INTO notifications (user_id, alert_id, title, message, type, channel, status, sent_at)
+       VALUES ($1, $2, $3, $4, 'alert', $5, 'sent', NOW())`,
       [userId, alertId, alert.title, alert.message, channel]
     );
     

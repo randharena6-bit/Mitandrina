@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITANDRINA - Protection par l'IA contre les catastrophes naturelles</title>
+    <meta name="description" content="Plateforme IA de prédiction, détection et coordination des catastrophes naturelles en temps réel">
+    <meta name="keywords" content="catastrophes naturelles, IA, prédiction, alertes, sécurité, Madagascar">
+    <meta name="theme-color" content="#059669">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #059669;
+            --primary-light: #ecfdf5;
+            --primary-dark: #047857;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --bg-white: #ffffff;
+            --bg-gray: #f8fafc;
+            --bg-gray-light: #f1f5f9;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: var(--bg-white) !important;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text-dark) !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand i {
+            color: var(--danger);
+            font-size: 1.75rem;
+        }
+        
+        .nav-link {
+            color: var(--text-gray) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-dark) !important;
+            background: var(--primary-light);
+        }
+        
+        .btn-nav-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.625rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
+        }
+        
+        .btn-nav-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ecfdf5 100%);
+            padding: 8rem 0 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(5, 150, 105, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .hero-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0 auto 1.5rem auto;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+        
+        .hero-badge i {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            color: var(--text-dark);
+        }
+        
+        .hero-title .text-danger {
+            color: var(--danger) !important;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-gray);
+            max-width: 550px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.7;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-hero-primary {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);
+        }
+        
+        .btn-hero-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(5, 150, 105, 0.4);
+            color: white;
+        }
+        
+        .btn-hero-secondary {
+            background: var(--bg-white);
+            color: var(--text-dark);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-hero-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary-dark);
+            background: var(--primary-light);
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            background: var(--bg-white);
+            padding: 4rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stat-card {
+            background: var(--bg-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: transparent;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-light);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .stat-icon i {
+            font-size: 1.75rem;
+            color: var(--primary-dark);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 6rem 0;
+            background: var(--bg-gray);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .section-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: var(--bg-white);
+            border-radius: 20px;
+            padding: 2rem;
+            height: 100%;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: transparent;
+        }
+        
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary-light);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon i {
+            font-size: 1.75rem;
+            color: var(--primary-dark);
+        }
+        
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-dark);
+        }
+        
+        .feature-text {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Alert Types Section */
+        .alerts-section {
+            padding: 6rem 0;
+            background: var(--bg-white);
+        }
+        
+        .alert-type-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg-gray);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .alert-type-card:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+        
+        .alert-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .alert-icon.inondation { background: #dbeafe; color: #2563eb; }
+        .alert-icon.seisme { background: #fef3c7; color: #d97706; }
+        .alert-icon.cyclone { background: var(--danger-light); color: var(--danger); }
+        .alert-icon.feu { background: #ffedd5; color: #ea580c; }
+        
+        .alert-icon i {
+            font-size: 1.5rem;
+        }
+        
+        .alert-type-card h5 {
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .alert-type-card small {
+            color: var(--text-gray);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 50%, #f8fafc 100%);
+            text-align: center;
+        }
+        
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .cta-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--bg-white);
+            padding: 4rem 0 2rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .footer-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            text-decoration: none;
+        }
+        
+        .footer-brand i {
+            color: var(--primary);
+        }
+        
+        .footer-text {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .footer-links h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-dark);
+        }
+        
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-hero-primary, .btn-hero-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stat-card {
+                margin-bottom: 1rem;
+            }
+            
+            .section-title, .cta-title {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .hero-title-cycle {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+        .hero-text-french,
+        .hero-text-malagasy {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 100%;
+            text-align: center;
+        }
+        .hero-text-french {
+            animation: frenchCycle 10s ease-in-out infinite;
+        }
+        .hero-text-malagasy {
+            animation: malagasyCycle 10s ease-in-out infinite;
+        }
+        @keyframes frenchCycle {
+            0%, 30% { opacity: 1; }
+            35%, 85% { opacity: 0; }
+            90%, 100% { opacity: 1; }
+        }
+        @keyframes malagasyCycle {
+            0%, 30% { opacity: 0; }
+            35%, 85% { opacity: 1; }
+            90%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="./">
+                <i class="bi bi-shield-shaded"></i>
+                MITANDRINA
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="./">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="map">Carte des risques</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Fonctionnalités</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-nav-primary" href="auth/login">
+                            <i class="bi bi-box-arrow-in-right"></i> Connexion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 offset-lg-2 text-center">
+                    <h1 class="hero-title text-center" style="min-height: 8rem; margin-bottom: 5vw;">
+                        <span class="animate-fade-up d-inline-block hero-title-cycle">
+                            <span class="hero-text-french text-center">
+                                Prédire les catastrophes.<br>
+                                <span class="text-danger">Protéger les vies.</span>
+                            </span>
+                            <span class="hero-text-malagasy text-center">
+                                Tiko ny taniko,<br>
+                                <span class="text-danger">ka ho arovako amin'ny loza.</span>
+                            </span>
+                        </span>
+                    </h1>
+                    <p class="hero-subtitle text-center">
+                        MITANDRINA utilise l'intelligence artificielle pour prédire, détecter et coordonner les réponses aux catastrophes naturelles en temps réel.
+                    </p>
+                    <div class="hero-buttons justify-content-center">
+                        <a href="map" class="btn btn-hero-primary">
+                            <i class="bi bi-map-fill"></i>
+                            Voir la carte des risques
+                        </a>
+                        <a href="auth/login" class="btn btn-hero-secondary">
+                            <i class="bi bi-person-circle"></i>
+                            Espace membre
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-map-fill"></i>
+                        </div>
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">Régions couvertes</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Surveillance</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Précision IA</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <span class="stat-number">&lt;5min</span>
+                        <span class="stat-label">Temps d'alerte</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Fonctionnalités clés</h2>
+                <p class="section-subtitle">
+                    Une plateforme complète pour la gestion des risques et la protection des populations
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-broadcast-pin"></i>
+                        </div>
+                        <h3 class="feature-title">Détection en temps réel</h3>
+                        <p class="feature-text">
+                            Surveillance continue des risques grâce à l'IA et aux satellites. 
+                            Alertes instantanées dès qu'un danger est détecté.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h3 class="feature-title">Prédiction intelligente</h3>
+                        <p class="feature-text">
+                            Algorithmes de machine learning pour prédire les catastrophes 
+                            naturelles avec une précision de 98%.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-map"></i>
+                        </div>
+                        <h3 class="feature-title">Cartographie interactive</h3>
+                        <p class="feature-text">
+                            Carte des risques en temps réel avec géolocalisation précise 
+                            des zones à risque et des itinéraires d'évacuation.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-bell-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Alertes multicanal</h3>
+                        <p class="feature-text">
+                            Notifications par SMS, email, et application mobile. 
+                            Intégration avec les systèmes d'alerte nationaux.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h3 class="feature-title">Coordination des secours</h3>
+                        <p class="feature-text">
+                            Plateforme centralisée pour coordonner les équipes de secours, 
+                            les ressources et les opérations d'urgence.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h3 class="feature-title">Informations vérifiées</h3>
+                        <p class="feature-text">
+                            Toutes les alertes sont vérifiées par nos experts avant diffusion 
+                            pour éviter les fausses alarmes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alert Types Section -->
+    <section class="alerts-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Types d'alertes couvertes</h2>
+                <p class="section-subtitle">
+                    Notre système surveille et prédit plusieurs types de catastrophes naturelles
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="alert-type-card">
+                        <div class="alert-icon inondation">
+                            <i class="bi bi-droplet-fill"></i>
+                        </div>
+                        <div>
+                            <h5>Inondations</h5>
+                            <small>Surveillance des crues</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="alert-type-card">
+                        <div class="alert-icon seisme">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                        <div>
+                            <h5>Séismes</h5>
+                            <small>Détection sismique</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="alert-type-card">
+                        <div class="alert-icon cyclone">
+                            <i class="bi bi-wind"></i>
+                        </div>
+                        <div>
+                            <h5>Cyclones</h5>
+                            <small>Prévision trajectoires</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="alert-type-card">
+                        <div class="alert-icon feu">
+                            <i class="bi bi-fire"></i>
+                        </div>
+                        <div>
+                            <h5>Feux de forêt</h5>
+                            <small>Détection thermique</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Prêt à être alerté ?</h2>
+            <p class="cta-subtitle">
+                Rejoignez des milliers de personnes protégées par MITANDRINA.
+                Inscrivez-vous gratuitement pour recevoir des alertes personnalisées.
+            </p>
+            <a href="auth/login" class="btn btn-hero-primary">
+                <i class="bi bi-person-plus-fill"></i>
+                Créer un compte gratuit
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <a href="./" class="footer-brand">
+                        <i class="bi bi-shield-shaded"></i>
+                        MITANDRINA
+                    </a>
+                    <p class="footer-text">
+                        Plateforme de prédiction et gestion des catastrophes naturelles 
+                        propulsée par l'intelligence artificielle. Protection 24/7.
+                    </p>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <div class="footer-links">
+                        <h5>Navigation</h5>
+                        <ul>
+                            <li><a href="./">Accueil</a></li>
+                            <li><a href="map">Carte</a></li>
+                            <li><a href="auth/login">Connexion</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6 mb-4">
+                    <div class="footer-links">
+                        <h5>Alertes</h5>
+                        <ul>
+                            <li><a href="#">Inondations</a></li>
+                            <li><a href="#">Séismes</a></li>
+                            <li><a href="#">Cyclones</a></li>
+                            <li><a href="#">Feux</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-links">
+                        <h5>Contact</h5>
+                        <ul>
+                            <li class="text-gray mb-2"><i class="bi bi-envelope me-2"></i> contact@mitandrina.mg</li>
+                            <li class="text-gray mb-2"><i class="bi bi-telephone me-2"></i> +261 34 00 000 00</li>
+                            <li class="text-gray"><i class="bi bi-geo-alt me-2"></i> Antananarivo, Madagascar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MITANDRINA. Tous droits réservés. | Protection par l'IA</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

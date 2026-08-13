@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,38 +21,32 @@
     
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
                     },
                     colors: {
-                        danger: {
-                            50: '#FEF2F2',
-                            100: '#FEE2E2',
-                            500: '#EF4444',
-                            600: '#DC2626',
-                            700: '#B91C1C',
+                        primary: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
                         },
-                        dark: {
-                            900: '#0F172A',
-                            800: '#1E293B',
-                            700: '#334155',
+                        danger: {
+                            50: '#fef2f2',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
                         }
                     },
                     animation: {
-                        'float': 'float 20s ease-in-out infinite',
-                        'fade-in-up': 'fadeInUp 0.6s ease',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out',
                     },
                     keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
-                            '33%': { transform: 'translate(30px, -30px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                        },
                         fadeInUp: {
-                            from: { opacity: '0', transform: 'translateY(30px)' },
+                            from: { opacity: '0', transform: 'translateY(20px)' },
                             to: { opacity: '1', transform: 'translateY(0)' },
                         },
                     }
@@ -61,150 +55,212 @@
         }
     </script>
     
-    <!-- Bootstrap Dark Overrides -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ecfdf5 100%);
+            min-height: 100vh;
         }
         
         .form-control {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
+            background: #f8fafc !important;
+            border: 2px solid #e2e8f0 !important;
+            color: #1e293b !important;
+            padding: 0.875rem 1rem 0.875rem 2.75rem !important;
+            border-radius: 12px !important;
+            transition: all 0.2s ease !important;
         }
         
         .form-control:focus {
-            background: rgba(255, 255, 255, 0.1) !important;
-            border-color: #DC2626 !important;
-            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.25) !important;
-            color: white !important;
+            background: #ffffff !important;
+            border-color: #059669 !important;
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1) !important;
         }
         
         .form-control::placeholder {
-            color: #64748B !important;
+            color: #94a3b8 !important;
         }
         
-        .form-floating > label {
-            color: #94A3B8;
+        .form-label {
+            display: block;
+            color: #475569;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            padding-left: 0.25rem;
         }
         
-        .form-floating > .form-control:focus ~ label,
-        .form-floating > .form-control:not(:placeholder-shown) ~ label {
-            color: #DC2626;
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .input-group:focus-within .input-icon {
+            color: #059669;
         }
         
         .form-check-input:checked {
-            background-color: #DC2626;
-            border-color: #DC2626;
+            background-color: #059669;
+            border-color: #059669;
         }
         
         .form-check-input:focus {
-            box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.25);
+            box-shadow: 0 0 0 0.25rem rgba(5, 150, 105, 0.25);
+        }
+        
+        .btn-primary-green {
+            background: #059669;
+            border: none;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary-green:hover {
+            background: #047857;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3);
+            color: white;
         }
     </style>
+    <link rel="stylesheet" href="/assets/css/custom.css?v=cf6cde8f">
 </head>
-<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 relative overflow-hidden">
+<body class="flex items-center justify-center p-4">
     
-    <!-- Background Effects -->
-    <div class="fixed inset-0 pointer-events-none">
-        <div class="absolute -top-40 -right-40 w-96 h-96 bg-danger-600/30 rounded-full blur-[100px] animate-float"></div>
-        <div class="absolute -bottom-20 -left-20 w-72 h-72 bg-blue-500/20 rounded-full blur-[100px] animate-float" style="animation-delay: -10s;"></div>
-        <div class="absolute inset-0 opacity-20" style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 50px 50px;"></div>
-    </div>
+    <!-- Back Link -->
+    <a href="${pageContext.request.contextPath}/" class="fixed top-6 left-6 flex items-center gap-2 text-gray-500 hover:text-primary-600 font-medium transition-colors">
+        <i class="bi bi-arrow-left"></i>
+        Retour à l'accueil
+    </a>
     
     <!-- Auth Card -->
-    <div class="w-full max-w-md px-4 relative z-10">
-        <div class="bg-dark-800/70 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl animate-fade-in-up">
+    <div class="w-full max-w-md animate-fade-in-up">
+        <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-100/50 p-8 transition-all hover:shadow-green-500/10">
             
             <!-- Header -->
             <div class="text-center mb-8">
-                <a href="${pageContext.request.contextPath}/" class="inline-flex items-center gap-2 text-xl font-bold text-white mb-6 hover:opacity-90 transition-opacity">
-                    <span class="text-2xl">🌪️</span>
+                <a href="${pageContext.request.contextPath}/" class="inline-flex items-center gap-2 text-2xl font-bold text-gray-900 mb-2 hover:opacity-90 transition-opacity">
+                    <i class="bi bi-shield-shaded text-danger-600"></i>
                     <span>MITANDRINA</span>
                 </a>
-                <h1 class="text-3xl font-bold text-white mb-2">Connexion</h1>
-                <p class="text-gray-400">Accédez à votre tableau de bord de sécurité</p>
+                <h1 class="text-2xl font-bold text-gray-900 mb-1">Connexion</h1>
+                <p class="text-gray-500 text-sm">Accédez à votre espace sécurisé</p>
             </div>
             
             <!-- Alert Error -->
             <c:if test="${not empty error}">
-                <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 py-2 px-3 rounded-lg" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill text-danger"></i>
-                    <span class="small">${error}</span>
+                <div class="flex items-center gap-3 p-4 mb-6 rounded-xl bg-danger-50 border border-red-200 text-red-700">
+                    <i class="bi bi-exclamation-triangle-fill text-lg"></i>
+                    <span class="text-sm">${error}</span>
                 </div>
             </c:if>
             
             <!-- Form -->
-            <form action="${pageContext.request.contextPath}/auth/login" method="post" class="needs-validation" novalidate>
+            <form action="login" method="post" class="needs-validation" novalidate>
                 
                 <!-- Email -->
-                <div class="form-floating mb-3">
-                    <input 
-                        type="email" 
-                        class="form-control rounded-lg" 
-                        id="email" 
-                        name="email" 
-                        placeholder="nom@exemple.com"
-                        value="${param.email}"
-                        required
-                        autocomplete="email"
-                    >
-                    <label for="email">
-                        <i class="bi bi-envelope me-1"></i>Adresse email
-                    </label>
+                <div class="mb-4">
+                    <label for="email" class="form-label">Adresse email</label>
+                    <div class="input-group">
+                        <i class="bi bi-envelope input-icon"></i>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email" 
+                            placeholder="nom@exemple.com"
+                            value="${param.email}"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
                     <div class="invalid-feedback">
                         Veuillez entrer une adresse email valide.
                     </div>
                 </div>
                 
                 <!-- Password -->
-                <div class="form-floating mb-4">
-                    <input 
-                        type="password" 
-                        class="form-control rounded-lg" 
-                        id="password" 
-                        name="password" 
-                        placeholder="Mot de passe"
-                        required
-                        autocomplete="current-password"
-                    >
-                    <label for="password">
-                        <i class="bi bi-lock me-1"></i>Mot de passe
-                    </label>
-                    <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-gray-400 hover:text-white" onclick="togglePassword()" style="z-index: 10;">
-                        <i class="bi bi-eye" id="toggleIcon"></i>
-                    </button>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Mot de passe</label>
+                    <div class="input-group">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Votre mot de passe"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-gray-400 hover:text-gray-600 px-3" onclick="togglePassword()" style="z-index: 10;">
+                            <i class="bi bi-eye" id="toggleIcon"></i>
+                        </button>
+                    </div>
                     <div class="invalid-feedback">
                         Veuillez entrer votre mot de passe.
                     </div>
                 </div>
                 
                 <!-- Options -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-6">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="remember" name="remember" value="true">
-                        <label class="form-check-label text-gray-400 text-sm" for="remember">
+                        <label class="form-check-label text-gray-600 text-sm" for="remember">
                             Se souvenir de moi
                         </label>
                     </div>
-                    <a href="${pageContext.request.contextPath}/auth/forgot-password" class="text-danger-500 hover:text-danger-400 text-sm text-decoration-none">
+                    <a href="${pageContext.request.contextPath}/auth/forgot-password" class="text-primary-600 hover:text-primary-700 text-sm font-medium text-decoration-none">
                         Mot de passe oublié?
                     </a>
                 </div>
                 
                 <!-- Submit -->
-                <button type="submit" class="btn w-100 py-3 rounded-lg font-semibold text-white transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5" style="background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                <button type="submit" class="btn btn-primary-green w-100 py-3 rounded-xl font-semibold text-white d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-box-arrow-in-right"></i>
                     Se connecter
                 </button>
             </form>
             
+            <!-- Divider -->
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-white text-gray-500">ou continuer avec</span>
+                </div>
+            </div>
+            
+            <!-- Social Login -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <button type="button" class="flex items-center justify-center p-3 rounded-xl border border-gray-200 hover:border-primary-500 hover:text-primary-600 transition-all bg-gray-50 hover:bg-white">
+                    <i class="bi bi-google text-lg"></i>
+                </button>
+                <button type="button" class="flex items-center justify-center p-3 rounded-xl border border-gray-200 hover:border-primary-500 hover:text-primary-600 transition-all bg-gray-50 hover:bg-white">
+                    <i class="bi bi-microsoft text-lg"></i>
+                </button>
+                <button type="button" class="flex items-center justify-center p-3 rounded-xl border border-gray-200 hover:border-primary-500 hover:text-primary-600 transition-all bg-gray-50 hover:bg-white">
+                    <i class="bi bi-github text-lg"></i>
+                </button>
+            </div>
+            
             <!-- Footer -->
-            <div class="mt-6 pt-6 border-t border-white/10 text-center">
-                <p class="text-gray-400 text-sm mb-3">Pas encore de compte?</p>
-                <a href="${pageContext.request.contextPath}/auth/register" class="btn btn-outline-light w-100 py-2 rounded-lg border-white/20 hover:bg-white/10 transition-all">
-                    Créer un compte gratuitement
-                </a>
+            <div class="text-center">
+                <p class="text-gray-500 text-sm">
+                    Pas encore de compte? 
+                    <a href="${pageContext.request.contextPath}/auth/register" class="text-primary-600 hover:text-primary-700 font-semibold text-decoration-none">
+                        S'inscrire gratuitement
+                    </a>
+                </p>
             </div>
         </div>
     </div>

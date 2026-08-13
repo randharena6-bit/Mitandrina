@@ -40,7 +40,7 @@ public class AuthServlet extends HttpServlet {
         
         if (path == null || path.equals("/") || path.equals("/login")) {
             // Page de login
-            req.getRequestDispatcher("/WEB-INF/views/auth/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/views/auth/login-tailwind.jsp").forward(req, resp);
         } else if (path.equals("/register")) {
             // Page d'inscription
             req.getRequestDispatcher("/WEB-INF/views/auth/register.jsp").forward(req, resp);
@@ -109,14 +109,14 @@ public class AuthServlet extends HttpServlet {
                     Map<String, Object> errorResponse = objectMapper.readValue(responseBody, Map.class);
                     req.setAttribute("error", errorResponse.getOrDefault("error", "Identifiants invalides"));
                     req.setAttribute("email", email);
-                    req.getRequestDispatcher("/WEB-INF/views/auth/login.jsp").forward(req, resp);
+                    req.getRequestDispatcher("/WEB-INF/views/auth/login-tailwind.jsp").forward(req, resp);
                 }
             }
             
         } catch (Exception e) {
             req.setAttribute("error", "Erreur de connexion: " + e.getMessage());
             req.setAttribute("email", email);
-            req.getRequestDispatcher("/WEB-INF/views/auth/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/views/auth/login-tailwind.jsp").forward(req, resp);
         }
     }
 

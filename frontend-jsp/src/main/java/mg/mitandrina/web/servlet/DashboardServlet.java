@@ -53,31 +53,24 @@ public class DashboardServlet extends HttpServlet {
             List<Map<String, Object>> alerts = fetchAlerts(token);
             req.setAttribute("recentAlerts", alerts != null ? alerts.subList(0, Math.min(5, alerts.size())) : Collections.emptyList());
             req.setAttribute("activeAlertsCount", alerts != null ? alerts.size() : 0);
-            req.setAttribute("unreadAlerts", countUnreadAlerts(token));
+            req.setAttribute("unreadAlerts", alerts != null ? alerts.size() : 0);
             
             // Récupérer les incidents proches
             List<Map<String, Object>> incidents = fetchNearbyIncidents(token, user);
             req.setAttribute("nearbyIncidents", incidents != null ? incidents : Collections.emptyList());
             req.setAttribute("todayIncidentsCount", incidents != null ? incidents.size() : 0);
             
-            // Stats mock pour démo
-            req.setAttribute("monitoredZonesCount", 47);
-            req.setAttribute("protectedUsersCount", 12543);
-            req.setAttribute("unreadNotifications", 3);
+            // Données réelles depuis l'API
+            req.setAttribute("monitoredZonesCount", fetchTotalAlertsCount(token));
+            req.setAttribute("protectedUsersCount", fetchUsersCount(token));
+            req.setAttribute("unreadNotifications", fetchUnreadNotificationsCount(token));
             
             // User location
             req.setAttribute("userLat", user.getOrDefault("locationLat", -18.9078));
             req.setAttribute("userLng", user.getOrDefault("locationLng", 47.5208));
             req.setAttribute("userLocation", "Antananarivo");
             
-            // Weather mock
-            req.setAttribute("weatherTemp", 24);
-            req.setAttribute("weatherHumidity", 65);
-            req.setAttribute("weatherWind", 12);
-            req.setAttribute("weatherRain", 2.5);
-            req.setAttribute("weatherIcon", "⛅");
-            
-            req.getRequestDispatcher("/WEB-INF/views/dashboard/index.jsp").forward(req, resp);
+            req.getRequestDispatcher("/WEB-INF/views/dashboard/dashboard-tailwind.jsp").forward(req, resp);
             
         } catch (Exception e) {
             throw new ServletException("Erreur chargement dashboard", e);
@@ -100,9 +93,59 @@ public class DashboardServlet extends HttpServlet {
         return Collections.emptyList();
     }
 
-    private int countUnreadAlerts(String token) throws IOException {
-        // Appel API pour compter les alertes non lues
-        return 2; // Mock
+    private int fetchTotalAlertsCount(String token) {
+        try {
+            HttpGet httpGet = new HttpGet(API_BASE_URL + "/alerts?limit=1");
+            httpGet.setHeader("Authorization", "Bearer " + token);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                if (response.getCode() == 200) {
+                    String body = EntityUtils.toString(response.getEntity());
+                    Map<String, Object> result = objectMapper.readValue(body, Map.class);
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> pagination = (Map<String, Object>) result.get("pagination");
+                    if (pagination != null && pagination.get("total") != null) {
+                        return ((Number) pagination.get("total")).intValue();
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return 0;
+    }
+
+    private int fetchUsersCount(String token) {
+        try {
+            HttpGet httpGet = new HttpGet(API_BASE_URL + "/admin/users");
+            httpGet.setHeader("Authorization", "Bearer " + token);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                if (response.getCode() == 200) {
+                    String body = EntityUtils.toString(response.getEntity());
+                    Map<String, Object> result = objectMapper.readValue(body, Map.class);
+                    @SuppressWarnings("unchecked")
+                    List<Object> users = (List<Object>) result.get("users");
+                    if (users != null) return users.size();
+                }
+            }
+        } catch (Exception ignored) {}
+        // Fallback : compter les alertes uniques comme proxy
+        return fetchTotalAlertsCount(token);
+    }
+
+    private int fetchUnreadNotificationsCount(String token) {
+        try {
+            HttpGet httpGet = new HttpGet(API_BASE_URL + "/notifications?limit=1");
+            httpGet.setHeader("Authorization", "Bearer " + token);
+            try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
+                if (response.getCode() == 200) {
+                    String body = EntityUtils.toString(response.getEntity());
+                    Map<String, Object> result = objectMapper.readValue(body, Map.class);
+                    Object unreadCount = result.get("unreadCount");
+                    if (unreadCount != null) {
+                        return ((Number) unreadCount).intValue();
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return 0;
     }
 
     private List<Map<String, Object>> fetchNearbyIncidents(String token, Map<String, Object> user) throws IOException, ParseException {

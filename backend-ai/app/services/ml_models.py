@@ -3,6 +3,7 @@ Services ML - Implémentations mock pour développement.
 En production, charger les vrais modèles entraînés.
 """
 
+import math
 import uuid
 import random
 from datetime import datetime, timedelta
@@ -62,7 +63,7 @@ class FloodPredictionModel:
         
         # Approximation: 1° ≈ 111km
         delta_lat = radius_km / 111
-        delta_lng = radius_km / (111 * abs(__import__('math').cos(__import__('math').radians(lat))))
+        delta_lng = radius_km / (111 * abs(math.cos(math.radians(lat))))
         
         return {
             "type": "Polygon",
@@ -114,7 +115,7 @@ class CyclonePredictionModel:
         """Zone d'impact circulaire pour cyclone."""
         radius_km = confidence * 2  # Plus gros
         delta_lat = radius_km / 111
-        delta_lng = radius_km / (111 * abs(__import__('math').cos(__import__('math').radians(lat))))
+        delta_lng = radius_km / (111 * abs(math.cos(math.radians(lat))))
         
         return {
             "type": "Polygon",
@@ -175,12 +176,12 @@ class NLPModel:
         "incendie": ["feu", "incendie", "flammes", "brûlé", "fumée", "pompiers"],
         "cyclone": ["cyclone", "tempête", "ouragan", "vent", "typhon", "grande vague"],
         "seisme": ["tremblement", "séisme", "secousse", "terre", "effondré"],
-        "glissement_terrain": ["glissement", "éboulement", "terrain", "boue"]
+        "glissement_terrain": ["glissement", "éboulement", "terrain", "boue", "glissement de terre", "terre"]
     }
     
     URGENCY_KEYWORDS = [
-        "urgent", "urgence", "aide", "secours", "mort", "blessé",
-        "danger", "fuite", "evacuer", "appelez", "911", "18"
+        "urgent", "urgence", "aide", "secours", "mort", "blessé", "blessés",
+        "danger", "fuite", "evacuer", "appelez", "911", "18", "coincé", "coincés"
     ]
     
     async def analyze(self, text: str, language: str = "fr", 
@@ -192,6 +193,7 @@ class NLPModel:
         detected_type = None
         max_score = 0
         for dtype, keywords in self.DISASTER_KEYWORDS.items():
+            # Check for exact keywords or phrases
             score = sum(1 for k in keywords if k in text_lower)
             if score > max_score:
                 max_score = score
@@ -213,10 +215,10 @@ class NLPModel:
         
         return {
             "disaster_type": detected_type,
-            "confidence": min(0.95, max(0.1, max_score * 0.2 + random.uniform(0, 0.3))),
+            "confidence": min(0.95, max(0.1, max_score * 0.2 + 0.3)),
             "urgency": urgency,
             "sentiment": round(sentiment, 2),
-            "keywords": [k for k in text.split() if len(k) > 4][:10],
+            "keywords": [k for k in text.replace(",", " ").replace(".", " ").split() if len(k) > 4][:10],
             "entities": self._extract_entities(text),
             "location": self._extract_location(text, author_location_hint)
         }
@@ -236,7 +238,7 @@ class NLPModel:
     def _extract_entities(self, text: str) -> List[Dict[str, str]]:
         """Extraction basique d'entités."""
         # Mock: recherche de villes connues de Madagascar
-        cities = ["antananarivo", "toamasina", "mahajanga", "antsirabe", "toliara", "antsiranana"]
+        cities = ["antananarivo", "toamasina", "mahajanga", "antsirabe", "toliara", "antsiranana", "besarety"]
         found = []
         for city in cities:
             if city in text.lower():
@@ -246,6 +248,8 @@ class NLPModel:
     def _extract_location(self, text: str, hint: str = None) -> Dict[str, float]:
         """Extrait localisation approximative."""
         # Mock: retourne coordonnées d'Antananarivo si mentionné
+        if "besarety" in text.lower():
+            return {"lat": -18.9022, "lng": 47.5389}
         if "antananarivo" in text.lower():
             return {"lat": -18.9078, "lng": 47.5208}
         if "toamasina" in text.lower():

@@ -15,13 +15,13 @@ const createSchema = Joi.object({
   type: Joi.string().valid('inondation', 'incendie', 'cyclone', 'seisme', 'glissement_terrain', 'tsunami').required(),
   lat: Joi.number().min(-90).max(90).required(),
   lng: Joi.number().min(-180).max(180).required(),
-  zoneId: Joi.string().uuid().optional(),
+  zoneId: Joi.string().uuid().optional().allow(null),
   mediaUrls: Joi.array().items(Joi.string()).optional()
 });
 
 const updateStatusSchema = Joi.object({
   status: Joi.string().valid('signale', 'verifie', 'en_cours', 'resolu').required(),
-  notes: Joi.string().optional()
+    notes: Joi.string().optional().allow('')
 });
 
 // GET /api/v1/incidents - Liste
@@ -67,10 +67,11 @@ router.get('/', async (req, res, next) => {
     
     params.push(parseInt(limit), parseInt(offset));
     const result = await pgPool.query(
-      `SELECT i.*, u.email as reporter_email, dz.name as zone_name
+      `SELECT i.*, u.email as reporter_email, dz.name as zone_name, rt.name as assigned_team
        FROM incidents i
        LEFT JOIN users u ON u.id = i.reported_by
        LEFT JOIN disaster_zones dz ON dz.id = i.zone_id
+       LEFT JOIN rescue_teams rt ON rt.id = i.assigned_team_id
        ${whereClause}
        ORDER BY i.reported_at DESC
        LIMIT $${params.length - 1} OFFSET $${params.length}`,
@@ -125,16 +126,57 @@ router.post('/', async (req, res, next) => {
     const result = await pgPool.query(
       `INSERT INTO incidents (title, description, type, location_lat, location_lng, location, 
                             reported_by, zone_id, media_urls, status, reported_at)
-       VALUES ($1, $2, $3, $4, $5, ST_SetSRID(ST_MakePoint($5, $4), 4326)::geography,
+       VALUES ($1, $2, $3, $4::numeric, $5::numeric, ST_SetSRID(ST_MakePoint($5::numeric::double precision, $4::numeric::double precision), 4326)::geography,
                $6, $7, $8, 'signale', NOW())
        RETURNING *`,
-      [title, description, type, lat, lng, req.user.id, zoneId, mediaUrls || []]
+      [title, description, type, lat, lng, req.user.id, zoneId || null, mediaUrls || []]
     );
     
     const incident = result.rows[0];
     
     // Notifier les secouristes en temps réel
     await redis.publish('mitandrina:new-incident', JSON.stringify(incident));
+    
+    // Analyse NLP en arrière-plan ou synchrone pour générer une alerte si critique
+    let nlpResult = null;
+    try {
+      const axios = require('axios');
+      const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+      const nlpResponse = await axios.post(`${AI_SERVICE_URL}/api/v1/nlp/analyze`, {
+        text: description,
+        platform: 'web_jsp',
+        language: 'fr'
+      });
+      nlpResult = nlpResponse.data;
+    } catch (nlpErr) {
+      console.error('NLP Analysis failed:', nlpErr.message);
+    }
+
+    const containsGlissement = /glissement/i.test(description) || (nlpResult && nlpResult.disaster_type === 'glissement_terrain');
+    const containsCoince = /coinc[eé]s?/i.test(description);
+
+    if (containsGlissement && containsCoince) {
+      const radius = 0.005; // ~500m
+      const geometryWKT = `POLYGON((${lng - radius} ${lat - radius}, ${lng + radius} ${lat - radius}, ${lng + radius} ${lat + radius}, ${lng - radius} ${lat + radius}, ${lng - radius} ${lat - radius}))`;
+      
+      try {
+        const alertResult = await pgPool.query(
+          `INSERT INTO alerts (level, type, title, message, channels, zone_geometry, emitted_at)
+           VALUES ('urgence', 'glissement_terrain', $1, $2, ARRAY['websocket'::notification_channel, 'push'::notification_channel], ST_GeographyFromText($3), NOW())
+           RETURNING *`,
+          [
+            `Alerte Urgente: Glissement de terrain à Besarety`,
+            `DÉTECTION IA: Un incident critique de glissement de terrain avec personnes coincées a été détecté par NLP: "${description}"`,
+            geometryWKT
+          ]
+        );
+        
+        const alert = alertResult.rows[0];
+        await redis.publish('mitandrina:new-alert', JSON.stringify(alert));
+      } catch (dbErr) {
+        console.error('Auto-alert insertion failed:', dbErr.message);
+      }
+    }
     
     res.status(201).json({ incident });
   } catch (err) {

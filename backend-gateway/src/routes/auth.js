@@ -55,8 +55,12 @@ router.post('/register', async (req, res, next) => {
     // Créer user
     const result = await pgPool.query(
       `INSERT INTO users (email, password_hash, phone_number, first_name, last_name, location_lat, location_lng, location)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, ST_SetSRID(ST_MakePoint($7, $6), 4326)::geography)
-       RETURNING id, email, role, created_at`,
+       VALUES ($1, $2, $3, $4, $5, $6::double precision, $7::double precision, 
+         CASE WHEN $6::double precision IS NOT NULL AND $7::double precision IS NOT NULL 
+              THEN ST_SetSRID(ST_MakePoint($7::double precision, $6::double precision), 4326)::geography 
+              ELSE NULL 
+         END)
+       RETURNING id, email, role, first_name, last_name, location_lat, location_lng, created_at`,
       [email, passwordHash, phoneNumber, firstName, lastName, locationLat, locationLng]
     );
     
@@ -76,6 +80,10 @@ router.post('/register', async (req, res, next) => {
         id: user.id,
         email: user.email,
         role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        locationLat: user.location_lat,
+        locationLng: user.location_lng,
         createdAt: user.created_at
       },
       token
@@ -98,7 +106,7 @@ router.post('/login', async (req, res, next) => {
     
     // Récupérer user
     const result = await pgPool.query(
-      'SELECT id, email, password_hash, role, is_active FROM users WHERE email = $1',
+      'SELECT id, email, password_hash, role, is_active, first_name, last_name, location_lat, location_lng FROM users WHERE email = $1',
       [email]
     );
     
@@ -137,7 +145,11 @@ router.post('/login', async (req, res, next) => {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role
+        role: user.role,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        locationLat: user.location_lat,
+        locationLng: user.location_lng
       },
       token
     });

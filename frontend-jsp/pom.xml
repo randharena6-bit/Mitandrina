@@ -40,7 +40,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- JSTL -->
+        <!-- JSTL - Jakarta EE 9+ -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
@@ -120,7 +125,7 @@
                     </container>
                     <configuration>
                         <properties>
-                            <cargo.servlet.port>8080</cargo.servlet.port>
+                            <cargo.servlet.port>9090</cargo.servlet.port>
                             <cargo.context.path>/</cargo.context.path>
                         </properties>
                     </configuration>

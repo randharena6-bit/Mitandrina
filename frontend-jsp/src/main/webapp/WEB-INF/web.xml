@@ -43,6 +43,9 @@
         <url-pattern>/alerts/*</url-pattern>
         <url-pattern>/incidents/*</url-pattern>
         <url-pattern>/map/*</url-pattern>
+        <url-pattern>/cyclone-map/*</url-pattern>
+        <url-pattern>/evacuation/*</url-pattern>
+        <url-pattern>/chatbot/*</url-pattern>
         <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
 
@@ -72,6 +75,15 @@
     <servlet-mapping>
         <servlet-name>MapServlet</servlet-name>
         <url-pattern>/map</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CycloneMapServlet</servlet-name>
+        <servlet-class>mg.mitandrina.web.servlet.CycloneMapServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CycloneMapServlet</servlet-name>
+        <url-pattern>/cyclone-map</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -119,6 +131,15 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ChatbotServlet</servlet-name>
+        <servlet-class>mg.mitandrina.web.servlet.ChatbotServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChatbotServlet</servlet-name>
+        <url-pattern>/chatbot</url-pattern>
+    </servlet-mapping>
+
     <!-- Error Pages -->
     <error-page>
         <error-code>404</error-code>
@@ -131,6 +152,7 @@
 
     <!-- Welcome File -->
     <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 

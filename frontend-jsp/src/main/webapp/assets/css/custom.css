@@ -1,0 +1,110 @@
+/* Custom UI enhancements for JSP front-end - MITANDRINA Design System */
+
+/* ==========================================================================
+   CARD STYLES (Mobile-aligned: white bg, 1px border, subtle shadow)
+   ========================================================================== */
+
+.card,
+.card-modern {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.card-modern:hover,
+a.card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ==========================================================================
+   ANIMATIONS & MOTION
+   ========================================================================== */
+
+@keyframes fadeInUpSmooth {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.main-content,
+.container,
+.card,
+.card-modern,
+.grid > div {
+    animation: fadeInUpSmooth 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.grid > div:nth-child(1), tbody tr:nth-child(1) { animation-delay: 50ms; }
+.grid > div:nth-child(2), tbody tr:nth-child(2) { animation-delay: 100ms; }
+.grid > div:nth-child(3), tbody tr:nth-child(3) { animation-delay: 150ms; }
+.grid > div:nth-child(4), tbody tr:nth-child(4) { animation-delay: 200ms; }
+.grid > div:nth-child(5), tbody tr:nth-child(5) { animation-delay: 250ms; }
+.grid > div:nth-child(6), tbody tr:nth-child(6) { animation-delay: 300ms; }
+.grid > div:nth-child(n+7), tbody tr:nth-child(n+7) { animation-delay: 350ms; }
+
+.dropdown-menu {
+    animation: fadeInUpSmooth 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top;
+}
+
+/* ==========================================================================
+   MICRO-INTERACTIONS & TOUCH
+   ========================================================================== */
+
+.btn,
+button,
+a.nav-link,
+.nav-item a,
+.btn-primary-green {
+    transition: background-color 0.2s ease, transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease !important;
+}
+
+.btn:active,
+button:active,
+.btn-primary-green:active,
+.nav-link-modern:active {
+    transform: scale(0.96) !important;
+}
+
+aside nav a,
+.offcanvas-body a {
+    transition: all 0.2s ease !important;
+    position: relative;
+}
+
+aside nav a:active,
+.offcanvas-body a:active {
+    transform: scale(0.98);
+}
+
+input, select, textarea, .form-control, .form-select {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+input:focus, select:focus, textarea:focus, .form-control:focus, .form-select:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+.progress {
+    border-radius: 9999px !important;
+    overflow: hidden;
+}
+.progress-bar {
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+}

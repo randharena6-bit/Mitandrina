@@ -37,6 +37,13 @@ class Settings(BaseSettings):
     TWILIO_PHONE_NUMBER: str = ""
     FIREBASE_PROJECT_ID: str = ""
     
+    # AI / Gemini
+    GEMINI_API_KEY: str = ""
+
+    # OpenRouter (fallback/enhancement pour analyse cyclonique)
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_MODEL: str = "deepseek/deepseek-chat"
+    
     # ML Models
     MODEL_PATH: str = "./models"
     FLOOD_MODEL_FILE: str = "flood_xgboost.pkl"

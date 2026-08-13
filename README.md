@@ -3,6 +3,7 @@
 Plateforme complète de **prédiction**, **détection** et **coordination** des catastrophes naturelles pour Madagascar et zones à risque.
 
 ## 🏗️ Architecture
+## lancement front-JSP : ** 
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

@@ -2,6 +2,7 @@
 
 import base64
 from datetime import datetime
+from math import radians, cos, sin, asin, sqrt
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
@@ -125,16 +126,8 @@ async def get_active_fires_in_zone(
         )
         
         # Filtrer par distance exacte
-        from math import radians, cos, sin, asin, sqrt
-        
-        def haversine(lat1, lon1, lat2, lon2):
-            R = 6371
-            lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-            dlat = lat2 - lat1
-            dlon = lon2 - lon1
-            a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-            return 2 * R * asin(sqrt(a))
-        
+        from app.services.geo_utils import haversine_km as haversine
+
         nearby_fires = [
             f for f in nasa_data
             if haversine(lat, lng, f["latitude"], f["longitude"]) <= radius_km

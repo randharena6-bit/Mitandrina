@@ -33,7 +33,9 @@ const alertsRouter = require('./routes/alerts');
 const incidentsRouter = require('./routes/incidents');
 const sheltersRouter = require('./routes/shelters');
 const notificationsRouter = require('./routes/notifications');
+const aiNotificationsRouter = require('./routes/ai_notifications');
 const healthRouter = require('./routes/health');
+const adminRouter = require('./routes/admin');
 
 const app = express();
 const server = http.createServer(app);
@@ -66,19 +68,35 @@ app.use(morgan('combined', { stream: { write: msg => logger.info(msg.trim()) } }
 // Compression
 app.use(compression());
 
-// Parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+// Proxy AI - AVANT body parser pour préserver le flux brut des POST
+app.use('/api/v1/ai', authMiddleware, createProxyMiddleware({
+  target: AI_SERVICE_URL,
+  changeOrigin: true,
+  pathRewrite: {
+    '^/api/v1/ai': '/api/v1'
+  },
+  onProxyReq: (proxyReq, req) => {
+    logger.info(`Proxy AI: ${req.method} ${req.path}`);
+  },
+  onError: (err, req, res) => {
+    logger.error('Proxy AI error:', err);
+    res.status(503).json({ error: 'AI Service unavailable' });
+  }
+}));
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
+  windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.ip
 });
 app.use('/api/', limiter);
+
+// Body parsing (uniquement pour les routes normales, pas le proxy AI)
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 // ============================================
 // ROUTES
@@ -96,22 +114,8 @@ app.use('/api/v1/alerts', authMiddleware, alertsRouter);
 app.use('/api/v1/incidents', authMiddleware, incidentsRouter);
 app.use('/api/v1/shelters', authMiddleware, sheltersRouter);
 app.use('/api/v1/notifications', authMiddleware, notificationsRouter);
-
-// Proxy vers FastAPI AI Services
-app.use('/api/v1/ai', authMiddleware, createProxyMiddleware({
-  target: AI_SERVICE_URL,
-  changeOrigin: true,
-  pathRewrite: {
-    '^/api/v1/ai': '/api/v1'  // Réécrit /api/v1/ai/predictions -> /api/v1/predictions
-  },
-  onProxyReq: (proxyReq, req) => {
-    logger.info(`Proxy AI: ${req.method} ${req.path}`);
-  },
-  onError: (err, req, res) => {
-    logger.error('Proxy AI error:', err);
-    res.status(503).json({ error: 'AI Service unavailable' });
-  }
-}));
+app.use('/api/v1/notifications', authMiddleware, aiNotificationsRouter);
+app.use('/api/v1/admin', authMiddleware, adminRouter);
 
 // ============================================
 // WEBSOCKET

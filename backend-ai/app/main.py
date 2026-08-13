@@ -17,7 +17,9 @@ from app.api import (
     nlp_analysis,
     routing,
     weather,
-    health
+    health,
+    ai_advisor,
+    admin_simulations
 )
 from app.core.config import settings
 from app.core.database import engine, Base
@@ -81,6 +83,8 @@ app.include_router(fire_detection.router, prefix="/api/v1/fire", tags=["Détecti
 app.include_router(nlp_analysis.router, prefix="/api/v1/nlp", tags=["Analyse NLP"])
 app.include_router(routing.router, prefix="/api/v1/routing", tags=["Calcul Routes A*"])
 app.include_router(weather.router, prefix="/api/v1/weather", tags=["Données Météo"])
+app.include_router(ai_advisor.router, prefix="/api/v1/ai-advisor", tags=["Conseiller IA Gemini"])
+app.include_router(admin_simulations.router, prefix="/api/v1", tags=["Simulations IA"])
 
 
 @app.get("/")

@@ -90,6 +90,27 @@ router.put('/read-all', async (req, res, next) => {
   }
 });
 
+// POST /api/v1/notifications - Créer une notification pour l'utilisateur connecté
+router.post('/', async (req, res, next) => {
+  try {
+    const { title, message, type = 'info' } = req.body;
+    if (!title || !message) {
+      return res.status(400).json({ error: 'title et message requis' });
+    }
+
+    const result = await pgPool.query(
+      `INSERT INTO notifications (user_id, title, message, type, channel, status, sent_at)
+       VALUES ($1, $2, $3, $4, 'push', 'sent', NOW())
+       RETURNING *`,
+      [req.user.id, title, message, type]
+    );
+
+    res.status(201).json({ notification: result.rows[0] });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // DELETE /api/v1/notifications/:id
 router.delete('/:id', async (req, res, next) => {
   try {

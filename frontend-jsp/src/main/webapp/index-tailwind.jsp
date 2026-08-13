@@ -11,6 +11,46 @@
 <jsp:include page="/WEB-INF/views/layout/base-tailwind.jsp">
     <jsp:attribute name="extraHead">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/landing-tailwind.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/custom.css">
+        <style>
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(30px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-up {
+                animation: fadeInUp 0.6s ease-out forwards;
+                opacity: 0;
+            }
+            
+            .hero-title-cycle {
+                position: relative;
+                display: inline-block;
+            }
+            .hero-text-french,
+            .hero-text-malagasy {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100%;
+                top: 0;
+            }
+            .hero-text-french {
+                animation: frenchCycle 10s ease-in-out infinite;
+            }
+            .hero-text-malagasy {
+                animation: malagasyCycle 10s ease-in-out infinite;
+            }
+            @keyframes frenchCycle {
+                0%, 30% { opacity: 1; }
+                35%, 85% { opacity: 0; }
+                90%, 100% { opacity: 1; }
+            }
+            @keyframes malagasyCycle {
+                0%, 30% { opacity: 0; }
+                35%, 85% { opacity: 1; }
+                90%, 100% { opacity: 0; }
+            }
+        </style>
     </jsp:attribute>
     
     <jsp:attribute name="emergencyBanner">
@@ -35,7 +75,7 @@
     <jsp:attribute name="content">
         
         <%-- Hero Section --%>
-        <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden glass-card">
             <%-- Background Effects --%>
             <div class="absolute inset-0 z-0">
                 <div class="absolute inset-0 bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900"></div>
@@ -63,15 +103,22 @@
                 </div>
                 
                 <%-- Title --%>
-                <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">
-                    <span class="text-white">Prédire les catastrophes.</span><br>
-                    <span class="gradient-text">Protéger les vies.</span>
+                <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight" style="min-height: 6rem;">
+                    <span class="animate-fade-up inline-block hero-title-cycle">
+                        <span class="hero-text-french">
+                            <span class="text-white">Prédire les catastrophes.</span><br>
+                            <span class="gradient-text">Protéger les vies.</span>
+                        </span>
+                        <span class="hero-text-malagasy">
+                            <span class="text-white">Tiko ny taniko,</span><br>
+                            <span class="gradient-text">ka ho arovako amin'ny loza</span>
+                        </span>
+                    </span>
                 </h1>
                 
                 <%-- Description --%>
-                <p class="text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-                    MITANDRINA utilise l'intelligence artificielle pour prédire, détecter 
-                    et coordonner les réponses aux catastrophes naturelles en temps réel.
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed text-center">
+                    MITANDRINA utilise l'intelligence artificielle pour prédire, détecter et coordonner les réponses aux catastrophes naturelles en temps réel.
                 </p>
                 
                 <%-- CTA Buttons --%>
@@ -80,6 +127,12 @@
                        class="btn-emergency text-lg px-8 py-4 flex items-center gap-2 animate-pulse-slow">
                         <i class="bi bi-map-fill"></i>
                         Voir la carte des risques
+                    </a>
+                    <a href="${pageContext.request.contextPath}/cyclone-map" 
+                       class="px-8 py-4 rounded-lg border border-purple-400/50 text-white font-semibold 
+                              hover:bg-purple-600/20 transition-all duration-300 backdrop-blur-sm flex items-center gap-2">
+                        <i class="bi bi-tornado"></i>
+                        Carte des cyclones
                     </a>
                     <a href="#features" 
                        class="px-8 py-4 rounded-lg border border-white/20 text-white font-semibold 
@@ -128,7 +181,7 @@
                     <span class="inline-block glass px-4 py-2 rounded-full text-sm text-gray-300 mb-4">
                         <i class="bi bi-satellite me-2"></i>Temps réel
                     </span>
-                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Surveillance 24/7</h2>
+                    
                     <p class="text-gray-400 max-w-2xl mx-auto text-lg">
                         Données satellites NASA FIRMS, météo OpenWeather et signaux sociaux 
                         analysés en continu par nos modèles IA.
@@ -446,9 +499,35 @@
                 window.requestAnimationFrame(step);
             }
             
-            window.addEventListener('load', () => {
-                animateValue('stat-predictions', 0, parseInt('${predictionCount}') || 1247, 2000);
-                animateValue('stat-users', 0, parseInt('${userCount}') || 15432, 2000);
+            window.addEventListener('load', async () => {
+                let predictions = parseInt('${predictionCount}') || 1247;
+                let users = parseInt('${userCount}') || 15432;
+                let zones = parseInt('${activeZonesCount}') || 0;
+                
+                try {
+                    const [alertsRes, usersRes] = await Promise.all([
+                        fetch('/api/v1/alerts?active=true&limit=1'),
+                        fetch('/api/v1/admin/users')
+                    ]);
+                    
+                    if (alertsRes.ok) {
+                        const alertsData = await alertsRes.json();
+                        const total = alertsData?.pagination?.total || alertsData?.alerts?.length || 0;
+                        if (total > 0) { predictions = total; zones = total; }
+                    }
+                    
+                    if (usersRes.ok) {
+                        const usersData = await usersRes.json();
+                        const total = usersData?.users?.length || 0;
+                        if (total > 0) users = total;
+                    }
+                } catch {}
+                
+                const badge = document.querySelector('.glass .text-sm.text-gray-300');
+                if (badge) badge.textContent = `Système opérationnel • ${zones} zones surveillées`;
+                
+                animateValue('stat-predictions', 0, predictions, 2000);
+                animateValue('stat-users', 0, users, 2000);
             });
         </script>
     </jsp:attribute>

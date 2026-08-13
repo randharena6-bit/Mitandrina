@@ -1,0 +1,36 @@
+# ===== Secrets =====
+.env
+.env.*
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# ===== Node =====
+node_modules/
+.expo/
+dist/
+
+# ===== Java / Maven (build) =====
+frontend-jsp/target/
+*.class
+
+# ===== Caches & logs =====
+backend-ai/cache/
+logs/
+*.log
+backend-gateway/logs/
+
+# ===== IDE =====
+.vscode/
+.idea/
+
+# ===== Temporaire / sauvegardes =====
+*.tmp
+*.bak
+*.backup
+.~lock.*
+lu15144h9pl.tmp
